@@ -1,0 +1,60 @@
+---
+title: "VisualizationHW3"
+author: "Larri Miller"
+date: "8/12/2020"
+output: html_document
+---
+HW # 3
+This code creates a visualization for the dataset used in previous HW assignments. The dataset used is scdb, which contains data on the Supreme Court's decisions from its first in 1791 through 2018. More information about scdb can be accessed at (http://scdb.wustl.edu/)
+
+This analysis uses the tidyverse package.
+``` {r setup, include=TRUE}
+library(tidyverse)
+```
+
+# Deciding what to visualize
+
+First, read in the data
+``` {r}
+scdb <- read.delim("scdb.csv", sep = ",", header  = TRUE)
+```
+
+Now, check to see the variables, or columns, in scdb to see what would be interesting to visualize.
+```{r}
+colnames(scdb)
+```
+
+I've opened up the scdb_codebook provided alongside the dataset, and have decided to check out a substantive variable issueArea to see what issues are most common.
+
+Using the provided codebook, let's recode the numerical values for issueArea & check to see if the change worked.
+``` {r}
+scdb <- scdb %>%
+  mutate(issueArea = recode(issueArea, `1` = "Criminal Procedure", `2` = "Civil Rights", `3` = "First Amendment", `4` = "Due Process", `5` = "Privacy", `6` = "Attorneys", `7` = "Unions", `8` = "Economic Activity", `9` = "Judicial Power", `10` = "Federalism", `11` = "Interstate Relations", `12` = "Federal Taxation", `13` = "Miscellaneous", `14` = "Private Action")) 
+
+head(select(scdb, issueArea))
+```
+
+# Creating the visualization
+I want to see what the most popular issue areas are, so I'm going to use a bar graph to visualize the issueArea data.
+``` {r}
+ggplot(scdb, aes(issueArea)) +
+  geom_bar()
+```
+
+Right now the column labels are on top of each other and difficult to read, so I'm going to flip the x and y axes using coord_flip(). I'm also going to add more descriptive labels.
+```{r}
+ggplot(data = scdb) +
+  geom_bar(mapping = aes(x = issueArea)) +
+  coord_flip() +
+  labs(
+    title = "Supreme Court Cases by Issue Area",
+    caption = "data from http://scdb.wustl.edu/",
+    y = "Number of Cases",
+    x = "Issue Area"
+  )
+```
+
+# Reflection
+1. From this visualization, we can see that the Issue Areas with the highest number of cases are Criminal Procedure, Economic Activity, Civil Rights, and Judicial Power, whereas issues like Private Action and Privacy have hardly any cases at all. 
+2. I chose to use a bar chart to represent the Issue Area data because I was interested in seeing what issues were most common in supreme court cases. Because I was only looking at this one categorical variable, it didn't make sense for me to use a scatterplot (as I had initially thought about attempting) that represents multiple variables.
+3. I wanted to add color to my graph, but I thought that adding in that option made my graph too overwhelming/redundant as the color labels were a repeat of the Y axis labels. 

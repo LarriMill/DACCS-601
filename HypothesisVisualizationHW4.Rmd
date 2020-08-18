@@ -1,0 +1,92 @@
+---
+title: "HypothesisVisualizationHW4"
+author: "Larri Miller"
+date: "8/13/2020"
+output: word_document
+---
+
+HW # 4
+This code outlines the creation of a relational hypothesis and visualization from the dataset used in previous HW assignments. The dataset used is scdb, which contains data on the Supreme Court's decisions from its first in 1791 through 2018. More information about scdb can be accessed at http://scdb.wustl.edu/
+
+This analysis uses the tidyverse package.
+``` {r setup, include=TRUE}
+library(tidyverse)
+```
+
+First, read in the data.
+``` {r}
+scdb <- read.delim("scdb.csv", sep = ",", header  = TRUE)
+```
+
+Now, check to see the variables, or columns, in scdb to see what would be interesting to visualize.
+```{r}
+colnames(scdb)
+```
+
+## 1. Descriptions of variables
+Two variables that stick out to me are decisionDirection, which codes the ideological direction of the decision (i.e. Liberal or Conservative), and issueArea, which codes the issue area of court cases (I used issueArea for the last HW)
+
+First, I'm going to run some summary statistics of these two variables to see what they're like.
+```{r}
+summarize(scdb, mean.issueArea=mean(issueArea, na.rm=TRUE), mean.decisionDirection=mean(decisionDirection, na.rm=TRUE), median.issueArea=median(issueArea, na.rm=TRUE), median.decisionDirection=median(decisionDirection, na.rm=TRUE))
+```
+
+Next I'm going to recode the numerical values for each variable to their corresponding category labels.
+``` {r}
+scdb <- scdb %>%
+  mutate(decisionDirection = recode(decisionDirection, `1` = "Conservative", `2` = "Liberal", `3` = "Unspecifiable")) %>%
+  mutate(issueArea = recode(issueArea, `1` = "Criminal Procedure", `2` = "Civil Rights", `3` = "First Amendment", `4` = "Due Process", `5` = "Privacy", `6` = "Attorneys", `7` = "Unions", `8` = "Economic Activity", `9` = "Judicial Power", `10` = "Federalism", `11` = "Interstate Relations", `12` = "Federal Taxation", `13` = "Miscellaneous", `14` = "Private Action")) 
+
+head(select(scdb, decisionDirection, issueArea))
+```
+
+
+I'm going to do a quick visualization of each variable as well to get a visual sense for what they look like individually.
+
+decisionDirection:
+``` {r}
+ggplot(scdb, aes(decisionDirection)) +
+  geom_bar()
+```
+
+issueArea:
+``` {r}
+ggplot(scdb, aes(issueArea)) +
+  geom_bar() +
+  coord_flip()
+```
+
+## 2. Description of relationship between variables, hypotheses 
+From these visualizations, I can see that the decisionDirection looks to be close between Conservative and Liberal (with Liberal having a slightly higher count) and that the top three issueAreas are Criminal Procedure, Economic Activity, and Civil Rights. 
+
+Based on my experiences with Conservative versus Liberal ideology, I'm going to make a general hypothesis a) that issue areas will differ in decision direction and more specific hypotheses that b) criminal procedure will lean conservative and c) civil rights will lean liberal. 
+
+## 3. Demonstration of relationship, visualization
+Now I'm going to plot these variables together to look for a relationship between them. I'm going to plot issueArea on the x axis and use color as an indicator of decisionDirection.
+```{r}
+ggplot(scdb, aes(issueArea, fill = decisionDirection)) +
+  geom_bar() +
+  coord_flip() +
+  labs (
+    title = "Supreme Court Cases by Issue Area and Decision Direction",
+    caption = "data from http://scdb.wustl.edu/",
+    x = "Issue Area",
+    y = "Decision Direction"
+  )
+```
+
+I'm going to also try facet_wrap() to look at individual issueAreas more closely.
+```{r}
+ggplot(scdb, aes(decisionDirection)) +
+  geom_bar() +
+  facet_wrap(vars(issueArea)) +
+  coord_flip() +
+  labs (
+    title = "Supreme Court Cases Issue Areas by Decision Direction Count",
+    caption = "data from http://scdb.wustl.edu/",
+    x = "Decision Direction",
+    y = "Count"
+  )
+```
+
+These graphs support hypothesis a in that individual issue areas seem to differ in decision direction. Similarly, the current graphs support hypotheses b and c in that criminal procedure leaned conservative and civil rights leaned liberal. Further analyses must be done to determine if these differences are statistically significant. 

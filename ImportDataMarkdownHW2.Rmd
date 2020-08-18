@@ -1,0 +1,31 @@
+---
+title: "ImportDataMarkdownHW2"
+author: "Larri Miller"
+date: "8/8/2020"
+output: html_document
+---
+# HW 2
+This assignment uses code from HW1 to import a dataset and view its first few rows. The dataset used for this assignment is scdb.
+
+```{r setup, include=TRUE}
+library(tidyverse)
+
+# Reading in the data 
+scdbData <- read.delim("scdb.csv", sep = ",", header  = TRUE)
+
+# This object is named "scdbData" because it holds data from the Supreme Court Database (scdb)
+# The file, scdb.csv, is already in my working directory
+# The delimiter is "," due to the file being a CSV (comma-separated value)
+# The header is "TRUE" because there is a header in the data with variable names
+
+# Checking the first few rows
+head(scdbData)
+
+#the head() function returns the variable names & the first few rows of the data file
+```
+
+This dataset, called scdb, is a database of the Supreme Court's decisions from its first in 1791 through 2018. More information about this dataset can be accessed at (http://scdb.wustl.edu/) 
+
+scdb has `r nrow(scdbData)` observations (rows) and `r ncol(scdbData)` variables (columns).
+
+
